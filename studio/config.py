@@ -60,6 +60,7 @@ DEFAULT_SETTINGS = {
     "buffer_key2": "", "buffer_key3": "", "buffer_key4": "", "buffer_key5": "", "buffer_key6": "",  # 1 compte Buffer gratuit par média
     "publish_rhythm": {},         # {x|instagram|tiktok|hub: {max, gap}} : remplace le rythme par défaut de chaque réseau
     "hub": {"enabled": False, "x": "", "name": "GROS TITRE"},  # compte X généraliste : le meilleur des 5 médias
+    "auto_judiciaire": True,      # publier seul le politico-judiciaire vérifié à 100 % et repris par 2 médias (jamais les drames)
     "recap": True,                # « L'essentiel du jour » : carrousel récapitulatif chaque soir, par média
     "recap_hour": 19,
     "publish": {},                # {media_id: {enabled, ig_user_id, ig_token, x_token, x_secret, + comptes Buffer x/instagram/tiktok}}

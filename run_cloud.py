@@ -34,7 +34,8 @@ def settings_from_env() -> None:
         pub.setdefault(m["id"], {})["enabled"] = os.environ.get("AUTO_PUBLISH", "1") == "1"
     flag = lambda k: os.environ.get(k, "0") == "1"
     save_settings({"auto": True, "browser_reader": True, "keep_days": 3, "publish": pub,
-                   "auto_sensitive": flag("AUTO_SENSITIVE"), "auto_enquetes": flag("AUTO_ENQUETES")})
+                   "auto_sensitive": flag("AUTO_SENSITIVE"), "auto_enquetes": flag("AUTO_ENQUETES"),
+                   "auto_judiciaire": os.environ.get("AUTO_JUDICIAIRE", "1") == "1"})
 
 
 def run_cycle() -> None:

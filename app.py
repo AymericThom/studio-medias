@@ -27,7 +27,7 @@ from studio import tunnel
 
 PORT = 8765
 ENGINE: Engine | None = None
-EDITABLE = {"publish_rhythm", "hub", "recap", "recap_hour", "ai_quality", "auto", "check_every_min", "hot_sources", "min_gap_min", "max_silence_h", "hours", "per_run",
+EDITABLE = {"auto_judiciaire", "publish_rhythm", "hub", "recap", "recap_hour", "ai_quality", "auto", "check_every_min", "hot_sources", "min_gap_min", "max_silence_h", "hours", "per_run",
             "max_per_day", "carousel_size", "keep_days", "press_photo", "enquete_every_days", "enquete_hour", "browser_reader",
             "notify", "notify_ready", "notify_published", "notify_error", "publish", "publish_max_per_day",
             "publish_gap_min", "public_url", "tunnel", "auto_sensitive", "auto_enquetes", "public_static_url"}

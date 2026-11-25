@@ -217,7 +217,7 @@ def build_post(media: dict, p: dict, c: dict, s: dict, gem: Gemini, extra: dict 
         "kind": kind_post, "x_text": clean_tweet(p["x_text"]),
         "caption": full_caption(p["caption"], credits, p.get("hashtags", []), question, c["sources"]),
         "tiktok_text": tiktok_caption(p["caption"], p.get("hashtags", []), question),
-        "question": question, "rubrique": p.get("rubrique", ""),
+        "question": question, "rubrique": p.get("rubrique", ""), "interet_general": p.get("interet_general", p["importance"]),
         "caption_base": p["caption"], "hashtags": p.get("hashtags", []), "label": p.get("label", ""),
         "label_emoji": p.get("label_emoji", ""), "cover_text": p["cover_text"], "points_title": p.get("points_title", ""),
         "points": p.get("points", []), "image_subjects": p["image_subjects"], "image_query_en": p.get("image_query_en", ""),

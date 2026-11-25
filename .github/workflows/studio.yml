@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write      # uniquement pour le « maintien » (commit vide tous les 50 jours)
+  actions: write       # pour le relais : lancer le passage suivant si la planification de GitHub ne se déclenche pas
   pages: write
   id-token: write
 
@@ -24,6 +25,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - run: echo "T0=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -61,6 +63,7 @@ jobs:
           AUTO_PUBLISH: ${{ vars.AUTO_PUBLISH || '1' }}
           AUTO_SENSITIVE: ${{ vars.AUTO_SENSITIVE || '0' }}
           AUTO_ENQUETES: ${{ vars.AUTO_ENQUETES || '0' }}
+          AUTO_JUDICIAIRE: ${{ vars.AUTO_JUDICIAIRE || '1' }}
           BUFFER_KEY_1: ${{ secrets.BUFFER_KEY_1 }}
           BUFFER_KEY_2: ${{ secrets.BUFFER_KEY_2 }}
           BUFFER_KEY_3: ${{ secrets.BUFFER_KEY_3 }}
@@ -118,7 +121,6 @@ jobs:
           key: studio-data-${{ github.run_id }}
 
       - name: Garder la planification active (GitHub la coupe après 60 jours sans activité)
-        if: github.event_name == 'schedule'
         run: |
           last=$(git log -1 --format=%ct)
           if [ $(( $(date +%s) - last )) -gt 4320000 ]; then
@@ -139,3 +141,18 @@ jobs:
       - id: deploy2
         if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
+
+      # La planification de GitHub (cron) n'est pas garantie : elle peut tarder des heures sur un nouveau dépôt
+      # ou sauter des passages. Si aucun passage planifié n'a eu lieu depuis 25 min, ce passage lance lui-même
+      # le suivant, 15 min après son propre départ. Dès que la planification marche, le relais s'arrête tout seul.
+      - name: Relais (passage suivant dans 15 min si GitHub ne le lance pas)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          last=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow studio.yml --event schedule --limit 1 --json createdAt --jq '.[0].createdAt // ""')
+          now=$(date +%s)
+          if [ -n "$last" ] && [ $(( now - $(date -d "$last" +%s) )) -lt 1500 ]; then echo "Planification GitHub active : pas de relais"; exit 0; fi
+          wait=$(( T0 + 870 - now ))
+          if [ "$wait" -gt 0 ]; then echo "Relais : prochain passage dans $wait s"; sleep "$wait"; fi
+          gh workflow run studio.yml --repo "$GITHUB_REPOSITORY" --ref "${GITHUB_REF_NAME}"

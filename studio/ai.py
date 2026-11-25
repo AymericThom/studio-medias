@@ -151,6 +151,13 @@ def _block(c: dict, sid: str) -> str:
     return "\n".join(lines)
 
 
+def _note(v, default: int) -> int:
+    try:
+        return max(1, min(10, int(v)))
+    except (TypeError, ValueError):
+        return default
+
+
 def write_posts(gem: Gemini, media: dict, clusters: list[dict], recent: list[str], n: int,
                 others: list[str] | None = None, other_niches: list[str] | None = None,
                 rubriques: dict[str, int] | None = None) -> list[dict]:
@@ -204,13 +211,15 @@ HORS SUJET pour {media['name']} (ne les prends JAMAIS) : {media.get('exclude', '
 Un bon sujet pour les réseaux : on s'arrête de scroller (surprenant, chiffre frappant, grand nom, décision qui change le
 quotidien, polémique sourcée), on a envie de commenter ou de partager, et c'est au cœur de la niche.
 Écarte aussi la pub, les bons plans, les tests produits, les directs sans fait nouveau et les doublons.
-Note chaque sujet : « pertinence_niche » (1-10 : est-ce vraiment le cœur de la niche ?) et « potentiel_reseaux »
-(1-10 : est-ce que ça va faire réagir sur TikTok, Instagram et X ?). Ne retourne QUE les sujets notés au moins 7 sur les deux.
+Note chaque sujet : « pertinence_niche » (1-10 : est-ce vraiment le cœur de la niche ?), « potentiel_reseaux »
+(1-10 : est-ce que ça va faire réagir sur TikTok, Instagram et X ?) et « interet_general » (1-10 : à quel point ça
+intéresse TOUS les Français, pas seulement les fans de la niche ; 9-10 = tout le monde en parle aujourd'hui, une info
+qu'on voit en ouverture des journaux ; 5 = intéressant surtout pour la niche). Ne retourne QUE les sujets notés au moins 7 sur les deux.
 S'il n'y a rien de bon, renvoie une liste vide : mieux vaut aucun post qu'un post moyen.
 
 Réponds en JSON :
 {{"posts": [{{
-  "id": "S1", "importance": 1-10, "sensitive": true/false, "pertinence_niche": 1-10, "potentiel_reseaux": 1-10,
+  "id": "S1", "importance": 1-10, "sensitive": true/false, "pertinence_niche": 1-10, "potentiel_reseaux": 1-10, "interet_general": 1-10,
   "headline": "titre interne factuel ≤ 90 caractères",
   "x_text": "...", "label": "...", "label_emoji": "...", "cover_text": "...",
   "points_title": "...", "points": ["...", "..."], "caption": "...", "hashtags": ["#..."], "question": "...", "rubrique": "...",
@@ -243,6 +252,7 @@ Réponds en JSON :
         out.append({
             "cluster": c,
             "importance": max(1, min(10, importance)),
+            "interet_general": _note(p.get("interet_general"), importance),
             "sensitive": bool(p.get("sensitive")) or any(w in titles for w in STRONG_SENSITIVE),
             "headline": str(p.get("headline") or c["title"])[:110],
             "x_text": humanize(str(p["x_text"]).strip()),

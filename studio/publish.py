@@ -143,6 +143,28 @@ def rhythm(platform: str, s: dict) -> dict:
     return r
 
 
+# Ce qui ne part JAMAIS tout seul, même vérifié : les drames humains.
+HARD = ["attentat", "terroris", "viol", "meurtre", "assassinat", "suicide", "otage", "fusillade", "pédo", "mineur",
+        "infanticide", "féminicide", "agression sexuelle", "mort", "tué", "décès", "décéd", "blessé", "victime", "enfant",
+        "drame", "noyade", "massacre", "bombardement"]
+
+
+def _ok_sensitive(p: dict, s: dict) -> bool:
+    """Sujet sensible publiable automatiquement ? Oui si tu l'as autorisé pour tout, ou s'il est politico-judiciaire
+    (perquisition, enquête, procès…), vérifié sans aucune correction et repris par au moins 2 médias."""
+    if s.get("auto_sensitive", False):
+        return True
+    d = p["data"]
+    text = f"{p['headline']} {d.get('cover_text', '')} {d.get('x_text', '')}".lower()
+    return (s.get("auto_judiciaire", True) and (d.get("verif") or {}).get("verdict") == "ok"
+            and p.get("n_sources", 0) >= 2 and not any(w in text for w in HARD))
+
+
+def gen(p: dict) -> int:
+    """Intérêt pour le grand public (posts récents) ; à défaut, l'importance dans la niche."""
+    return int(p["data"].get("interet_general") or p["importance"])
+
+
 def _eligible(p: dict, s: dict, platform: str = "x") -> bool:
     d, r = p["data"], rhythm(platform, s)
     v = d.get("verif") or {}
@@ -150,13 +172,14 @@ def _eligible(p: dict, s: dict, platform: str = "x") -> bool:
         return False
     if time.time() - p["created"] > r["age_h"] * 3600 * (2 if d.get("kind") in ("enquete", "recap") else 1):
         return False
-    if p["importance"] < r["min_imp"] and not d.get("hot"):
+    score = gen(p) if platform == "hub" else p["importance"]
+    if score < r["min_imp"] and not (d.get("hot") and platform != "hub"):
         return False
     if d.get("kind") == "enquete" and not s.get("auto_enquetes", False):
         return False
     if platform == "hub" and d.get("kind") == "recap":     # le récap d'un média n'a rien à faire sur le compte généraliste
         return False
-    if p["sensitive"] and not s.get("auto_sensitive", False):
+    if p["sensitive"] and not _ok_sensitive(p, s):
         return False
     return True
 
@@ -333,7 +356,8 @@ def autopublish_tick() -> None:
     if hub.get("enabled") and hub.get("x") and buffer_ref(hub["x"], s)[0]:
         count = _ready("hub:x", "hub", s, day, hour)
         if count is not None:
-            pool = _order([p for p in db.posts(None, time.time() - 6 * 3600) if p["media"] in medias])
+            pool = sorted([p for p in db.posts(None, time.time() - 6 * 3600) if p["media"] in medias],
+                          key=lambda p: (-gen(p), -bool(p["data"].get("hot")), -p["created"]))
             cand = _pick(pool, s, "hub", "hub")
             if cand and _try("hub:x", "X (Gros Titre)", hub.get("name") or "Gros Titre", cand, "x", {"x": hub["x"]}, s,
                              "buffer", "hub", day, count):

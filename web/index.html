@@ -343,7 +343,8 @@ function renderSettings(){
       <div id="bufRows">${S.medias.map(m => bufRow(m, st.publish[m.id] || {})).join('')}</div>
       <h3 style="margin:14px 0 4px">3. Activer</h3>
       <div id="pubRows">${S.medias.map(m => pubRow(m, st.publish[m.id] || {})).join('')}</div>
-      <label class="f"><input type="checkbox" id="autoSens"> Publier aussi automatiquement les <b>sujets sensibles</b> vérifiés (risque juridique : à tes risques)</label>
+      <label class="f"><input type="checkbox" id="autoJud"> Publier automatiquement le <b>politico-judiciaire</b> (perquisitions, enquêtes, procès…) quand il est vérifié à 100 % et repris par au moins 2 médias. Jamais les drames (morts, victimes, mineurs, attentats)</label>
+      <label class="f"><input type="checkbox" id="autoSens"> Publier aussi automatiquement <b>tous</b> les sujets sensibles vérifiés, drames compris (risque juridique : à tes risques)</label>
       <label class="f"><input type="checkbox" id="autoEnq"> Publier aussi automatiquement les <b>enquêtes</b> 🔎</label>
       <h3 style="margin:16px 0 4px">⭐ Compte X généraliste « Gros Titre » (facultatif, conseillé)</h3>
       <p class="help">Un 6e compte X (identité prête dans le dossier COMPTES/Gros Titre), généraliste, qui publie en continu le meilleur des 5 médias (les sujets les plus forts, dès qu’ils tombent), comme les grands comptes d’alertes. Sur X, ce sont eux qui grossissent le plus vite. Mets-le dans le compte Buffer 6.</p>
@@ -425,7 +426,7 @@ function renderSettings(){
     const mid = b.dataset.xfinish, res = document.querySelector(`[data-xres="${mid}"]`);
     const r = await api('/api/x/finish', {media: mid, pin: document.querySelector(`[data-xpin="${mid}"]`).value});
     res.innerHTML = r.ok ? `<span class="keyok">Compte @${esc(r.name)} connecté ✓</span>` : `<span class="keyko">${esc(r.msg)}</span>`; });
-  $('#autoSens').checked = st.auto_sensitive; $('#autoEnq').checked = st.auto_enquetes; $('#browserReader').checked = st.browser_reader; $('#autostartBox').checked = st.autostart; if (!st.windows) $('#autoWrap').style.display = 'none';
+  $('#autoJud').checked = st.auto_judiciaire !== false; $('#autoSens').checked = st.auto_sensitive; $('#autoEnq').checked = st.auto_enquetes; $('#browserReader').checked = st.browser_reader; $('#autostartBox').checked = st.autostart; if (!st.windows) $('#autoWrap').style.display = 'none';
   $('#autostartBox').onchange = async e => { const r = await api('/api/autostart', {enabled: e.target.checked}); toast(r.ok ? (r.enabled ? 'Le studio démarrera avec Windows ✓' : 'Démarrage automatique désactivé') : 'Impossible : ' + r.msg); };
   $('#h0').value = st.hours[0]; $('#h1').value = st.hours[1]; $('#perrun').value = st.per_run; $('#maxday').value = st.max_per_day;
   $('#csize').value = st.carousel_size.join('x');
@@ -437,7 +438,7 @@ function renderSettings(){
     S = await api('/api/settings', {gemini_key: $('#gkey').value, pexels_key: $('#pkey').value, password: $('#pw').value, remove_password: $('#pwdel') ? $('#pwdel').checked : false, ai_quality: $('#quality').value,
       auto: $('#auto').checked, check_every_min: Math.max(5, +$('#check').value || 10), hot_sources: Math.max(2, +$('#hotn').value || 3), min_gap_min: Math.max(5, +$('#gap').value || 20), max_silence_h: Math.max(1, +$('#silence').value || 3), enquete_every_days: Math.max(0, +$('#enqdays').value), enquete_hour: Math.min(22, Math.max(6, +$('#enqhour').value || 18)), press_photo: $('#press').checked, browser_reader: $('#browserReader').checked,
       notify_ready: $('#nReady').checked, notify_published: $('#nPub').checked, notify_error: $('#nErr').checked,
-      ...Object.fromEntries(bufKeys().map((v, i) => [i ? `buffer_key${i + 1}` : 'buffer_key', v])), publish: pubConfig(), x_api_key: $('#xKey').value, x_api_secret: $('#xSecret').value, auto_sensitive: $('#autoSens').checked, auto_enquetes: $('#autoEnq').checked, publish_rhythm: rhythmConfig(), recap: $('#recapOn').checked, recap_hour: Math.min(22, Math.max(12, +$('#recapHour').value || 19)),
+      ...Object.fromEntries(bufKeys().map((v, i) => [i ? `buffer_key${i + 1}` : 'buffer_key', v])), publish: pubConfig(), x_api_key: $('#xKey').value, x_api_secret: $('#xSecret').value, auto_sensitive: $('#autoSens').checked, auto_judiciaire: $('#autoJud').checked, auto_enquetes: $('#autoEnq').checked, publish_rhythm: rhythmConfig(), recap: $('#recapOn').checked, recap_hour: Math.min(22, Math.max(12, +$('#recapHour').value || 19)),
       hub: {enabled: $('#hubOn').checked, name: $('#hubName').value.trim() || 'GROS TITRE', x: $('#hubX').value}, public_url: $('#pubUrl').value.trim(), tunnel: $('#tunnelBox').checked, hours: [+$('#h0').value, +$('#h1').value],
       per_run: Math.max(1, +$('#perrun').value || 2), max_per_day: Math.max(1, +$('#maxday').value || 10), carousel_size: [w, h], medias});
     toast('Réglages enregistrés ✓'); renderHeader(); renderTabs(); renderSettings();
