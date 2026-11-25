@@ -258,9 +258,30 @@ def _ready(acct: str, platform: str, s: dict, day: str, hour: int, urgent: bool 
     return count
 
 
+_ONLINE: dict[str, bool] = {}
+
+
+def _online(p: dict, platform: str, s: dict) -> bool:
+    """Mode GitHub : l'image du post est-elle déjà en ligne ? (sinon Buffer échouerait : on attend le passage suivant)"""
+    if not s.get("public_static_url"):
+        return True
+    d = p["data"]
+    rel = d.get("x_image") if platform in ("x", "hub") else (
+        (d.get("tiktok_slides") or d.get("slides") or [""])[0] if platform == "tiktok" else (d.get("slides") or [""])[0])
+    if not rel:
+        return False
+    url = f"{s['public_static_url'].rstrip('/')}/files/{rel}"
+    if url not in _ONLINE:
+        try:
+            _ONLINE[url] = requests.head(url, timeout=10, allow_redirects=True).status_code == 200
+        except requests.RequestException:
+            _ONLINE[url] = False
+    return _ONLINE[url]
+
+
 def _pick(posts: list[dict], s: dict, platform: str, tag: str) -> dict | None:
     return next((p for p in posts if _eligible(p, s, platform) and not db.kv_get(f"pub_done:{p['id']}:{tag}")
-                 and int(db.kv_get(f"pub_fail:{p['id']}:{tag}", 0)) < 2), None)
+                 and int(db.kv_get(f"pub_fail:{p['id']}:{tag}", 0)) < 2 and _online(p, platform, s)), None)
 
 
 def _order(posts: list[dict]) -> list[dict]:

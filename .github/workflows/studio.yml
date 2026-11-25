@@ -132,4 +132,10 @@ jobs:
         with:
           path: site
       - id: deploy
+        continue-on-error: true            # GitHub a parfois un raté passager : on réessaie juste après
+        uses: actions/deploy-pages@v4
+      - if: steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - id: deploy2
+        if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
