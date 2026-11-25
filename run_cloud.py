@@ -16,11 +16,13 @@ import shutil
 import threading
 import time
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from studio import db
 from studio.config import CLOUD, POSTS, ROOT, load_medias, load_settings, save_settings, setup_logging
 
 SITE = ROOT / "site"
+PARIS = ZoneInfo("Europe/Paris")          # les serveurs de GitHub sont à l'heure UTC
 
 
 def settings_from_env() -> None:
@@ -88,7 +90,7 @@ def export_site() -> None:
             done = " · ".join(lbl for k, lbl in (("posted_x", "publié sur X"), ("posted_social", "publié Insta")) if p[k])
             slides = "".join(f'<a href="files/{html.escape(x)}" target="_blank"><img loading="lazy" src="files/{html.escape(x)}"></a>'
                              for x in d.get("slides", []))
-            cards.append(f'''<article><div class="meta">{datetime.fromtimestamp(p["created"]).strftime("%d/%m %Hh%M")} · {badge}
+            cards.append(f'''<article><div class="meta">{datetime.fromtimestamp(p["created"], PARIS).strftime("%d/%m %Hh%M")} · {badge}
               {" · ⚠️ sensible" if p["sensitive"] else ""}{" · " + done if done else ""}</div><h3>{html.escape(p["headline"])}</h3>
               <div class="slides">{slides}</div>
               <details><summary>Textes (description, tweet)</summary><pre>{html.escape(d.get("caption", ""))}</pre>
@@ -102,7 +104,7 @@ body{{margin:0;background:#0c0d12;color:#ececf3;font:15px/1.5 system-ui,sans-ser
 nav{{position:sticky;top:0;background:#0c0d12ee;padding:10px 16px;border-bottom:1px solid #2a2b38}}nav a{{color:#ececf3;margin-right:14px}}
 article{{background:#15161e;border:1px solid #2a2b38;border-radius:14px;padding:14px;margin:14px 0}}.meta{{color:#9b9cad;font-size:13px}}
 .slides{{display:flex;gap:8px;overflow-x:auto}}.slides img{{height:260px;border-radius:10px}}pre{{white-space:pre-wrap;background:#0f1016;padding:10px;border-radius:10px}}
-small{{color:#9b9cad;font-size:14px}}</style></head><body><nav>⚡ Studio Médias · mis à jour le {datetime.now().strftime("%d/%m à %Hh%M")} · {nav}</nav>
+small{{color:#9b9cad;font-size:14px}}</style></head><body><nav>⚡ Studio Médias · mis à jour le {datetime.now(PARIS).strftime("%d/%m à %Hh%M")} (heure de Paris) · {nav}</nav>
 <main>{"".join(blocks)}</main></body></html>'''
     (SITE / "index.html").write_text(page, encoding="utf-8")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")

@@ -4,7 +4,7 @@ name: studio-medias
 
 on:
   schedule:
-    - cron: "*/15 * * * *"        # toutes les 15 min (GitHub peut décaler de quelques minutes)
+    - cron: "4,19,34,49 * * * *"  # toutes les 15 min, hors des heures pile (moins de retard chez GitHub)
   workflow_dispatch:
 
 permissions:
