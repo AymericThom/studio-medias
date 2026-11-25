@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Médias</title>
+<style>
+:root{--bg:#0c0d12;--panel:#15161e;--panel2:#1c1d27;--line:#2a2b38;--txt:#ececf3;--mut:#9b9cad;--ok:#22c55e;--warn:#f5b301;--c:#6366f1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+a{color:inherit}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--txt);border-radius:10px;padding:8px 13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+button:hover,.btn:hover{border-color:#44465a}
+.btn.primary{background:var(--c);border-color:var(--c);color:#fff}
+.btn.white{background:#fff;color:#000;border-color:#fff}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.on{background:#0f3b23;border-color:#1f7a45;color:#8ff0b5}
+.btn.danger:hover{border-color:#a33;color:#ff8a8a}
+header.top{position:sticky;top:0;z-index:20;background:rgba(12,13,18,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{max-width:1240px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:18px;letter-spacing:.2px}.logo span{color:var(--c)}
+.hstat{color:var(--mut);font-size:13px;flex:1;min-width:200px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mut);margin-right:5px;vertical-align:1px}
+.dot.live{background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+nav.tabs{max-width:1240px;margin:0 auto;padding:0 18px 10px;display:flex;gap:8px;overflow-x:auto}
+.tab{display:flex;align-items:center;gap:9px;padding:7px 12px 7px 7px;border-radius:12px;border:1px solid var(--line);background:var(--panel);cursor:pointer;white-space:nowrap;font-weight:600}
+.tab img{width:30px;height:30px;border-radius:8px}
+.tab.active{border-color:var(--tc);box-shadow:inset 0 0 0 1px var(--tc)}
+.tab .badge{background:var(--tc);color:#fff;border-radius:999px;font-size:12px;padding:1px 8px}
+.tab.off{opacity:.45}
+.spin{width:14px;height:14px;border:2px solid var(--mut);border-top-color:transparent;border-radius:50%;animation:sp 0.8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+main{max-width:1240px;margin:0 auto;padding:18px}
+.mhead{display:flex;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;flex-wrap:wrap}
+.mhead img{width:64px;height:64px;border-radius:14px}
+.mhead h1{margin:0;font-size:21px}.mhead .sub{color:var(--mut);font-size:13.5px}
+.mhead .grow{flex:1;min-width:240px}
+.status{font-size:13.5px;margin-top:4px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:7px 12px}
+.seg button.on{background:var(--panel2);color:#fff}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.empty{text-align:center;color:var(--mut);padding:70px 20px}
+.post{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:18px 0;overflow:hidden}
+.post.done{opacity:.6}
+.phead{padding:14px 18px;border-bottom:1px solid var(--line)}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mut)}
+.chip{border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.chip.imp{background:var(--tc);border-color:var(--tc);color:#fff;font-weight:700}
+.chip.warn{background:#3b2a00;border-color:#6b4d00;color:#ffd36b}
+.chip.ok{background:#0f3320;border-color:#1f6b40;color:#8ff0b5}
+.chip.fix{background:#2c2410;border-color:#6b5a1f;color:#ffe08a}
+.chip.enq{background:#1d1640;border-color:#3e2f8f;color:#c9b8ff}
+.chip.hot{background:#3d1206;border-color:#7a2a10;color:#ffb08a}
+.chip.press{background:#10263d;border-color:#1f4a75;color:#9dc8ff}
+.phead h2{margin:6px 0 0;font-size:18px}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:0}
+.col{padding:16px 18px}.col+.col{border-left:1px solid var(--line)}
+.ctitle{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:700;margin-bottom:10px;display:flex;gap:8px;align-items:center}
+.slides{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.slides img{width:100%;border-radius:10px;display:block;aspect-ratio:4/5;object-fit:cover;background:#222}
+.ximg{width:100%;border-radius:12px;display:block;margin-bottom:10px;aspect-ratio:16/9;object-fit:cover;background:#222}
+textarea{width:100%;background:#0f1016;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:15px/1.5 "Segoe UI",system-ui,sans-serif;resize:vertical}
+textarea.tw{min-height:118px}textarea.cap{min-height:190px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.count{font-size:12.5px;color:var(--mut)}.count.over{color:#ff6b6b;font-weight:700}
+.pfoot{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:rgba(255,255,255,.015)}
+.pfoot .sp{flex:1}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:18px}
+.card h2{margin:0 0 4px;font-size:18px}.card p.help{color:var(--mut);margin:0 0 14px;font-size:13.5px}
+label.f{display:block;margin:12px 0 4px;font-weight:600;font-size:14px}
+input[type=text],input[type=password],input[type=number],select{background:#0f1016;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 11px;font:inherit;width:100%;max-width:460px}
+input[type=color]{width:46px;height:38px;border:1px solid var(--line);border-radius:8px;background:#0f1016;padding:2px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:4px 18px}
+.mrow{display:grid;grid-template-columns:44px 1.1fr 1fr 60px 2fr 70px;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.mrow img{width:40px;height:40px;border-radius:9px}
+.mrow input{max-width:none}
+.log{font:12px/1.5 Consolas,monospace;color:var(--mut);background:#0f1016;border:1px solid var(--line);border-radius:12px;padding:10px;max-height:260px;overflow:auto;white-space:pre-wrap}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#fff;color:#000;padding:10px 18px;border-radius:999px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:50}
+#toast.show{opacity:1}
+.keyok{color:var(--ok)}.keyko{color:#ff7b7b}
+@media (max-width:860px){.cols{grid-template-columns:1fr}.col+.col{border-left:0;border-top:1px solid var(--line)}.mrow{grid-template-columns:40px 1fr 1fr;}.mrow .wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <div class="logo">⚡ Studio <span>Médias</span></div>
+    <div class="hstat" id="hstat"></div>
+    <button class="btn" id="genAll" title="Le studio génère tout seul ; ce bouton force une vérification immédiate">⟳ Vérifier l'actu maintenant</button>
+  </div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<main id="main"></main>
+<div id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S = null, tab = localStorage.getItem('tab') || '', filter = localStorage.getItem('filter') || 'todo';
+let posts = [], postsKey = '', timer = null;
+
+function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 1700); }
+async function api(path, body){
+  const r = await fetch(path, body === undefined ? {} : {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+  return r.json();
+}
+function wlen(t){ let n = 0; for (const ch of t) { const o = ch.codePointAt(0); n += (o <= 0x10FF || (o >= 0x2000 && o <= 0x201F)) ? 1 : 2; } return n; }
+function copy(text){
+  const done = () => toast('Copié ✓');
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallback());
+  else fallback();
+  function fallback(){ const a = document.createElement('textarea'); a.value = text; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); done(); }
+}
+function newsAge(ts){ const m = Math.round((Date.now()/1000 - ts)/60); return m < 60 ? `d'il y a ${Math.max(1, m)} min` : `d'il y a ${Math.round(m/60)} h`; }
+function verifChip(v){
+  if (!v) return '';
+  const tip = esc((v.problemes || []).join(' · ') || 'Aucune erreur trouvée');
+  const n = (v.textes || []).length;
+  if (v.verdict === 'ok') return `<span class="chip ok" title="${tip}">✅ Faits vérifiés sur ${n} article${n > 1 ? 's' : ''} complet${n > 1 ? 's' : ''}</span>`;
+  if (v.verdict === 'corrige') return `<span class="chip fix" title="${tip}">✏️ Corrigé par la vérification (survole pour voir)</span>`;
+  return `<span class="chip warn" title="${tip}">⚠️ Non vérifié sur les articles complets : relis bien</span>`;
+}
+function ago(ts){ if (!ts) return 'jamais'; const m = Math.round((Date.now()/1000 - ts)/60); return m < 1 ? "à l'instant" : m < 60 ? `il y a ${m} min` : `il y a ${Math.round(m/60)} h`; }
+
+// ------------------------------------------------------------------ état
+async function refresh(){
+  try { S = await api('/api/state'); } catch(e) { $('#hstat').textContent = '⚠️ Studio injoignable : relance LANCER.bat'; schedule(5000); return; }
+  if (!tab || (tab !== 'settings' && !S.medias.find(m => m.id === tab))) tab = S.settings.has_key ? S.medias[0].id : 'settings';
+  renderHeader(); renderTabs(); updateTitle();
+  if (tab === 'settings') { if (!$('#settingsView')) renderSettings(); else renderLog(); }
+  else {
+    const m = S.medias.find(x => x.id === tab);
+    const key = tab + ':' + m.version;
+    if (key !== postsKey || !$('#postsWrap')) { posts = await api('/api/posts?media=' + tab); postsKey = key; renderMedia(m, true); }
+    else renderMedia(m, false);
+  }
+  schedule(S.busy ? 2500 : 15000);
+}
+function schedule(ms){ clearTimeout(timer); timer = setTimeout(refresh, ms); }
+
+function renderHeader(){
+  const st = S.settings;
+  const auto = st.auto && st.has_key ? `<span class="dot live"></span>Automatique : l'actu est vérifiée toutes les ${st.check_every_min} min, posts créés dès qu'un sujet chauffe` : `<span class="dot"></span>Automatique : désactivé`;
+  const key = st.has_key ? '' : ' · <b style="color:#ffd36b">Ajoute ta clé Gemini dans Réglages</b>';
+  $('#hstat').innerHTML = `${auto} · IA : ${S.ai_calls} appel(s) aujourd'hui${key}`;
+}
+function renderTabs(){
+  $('#tabs').innerHTML = S.medias.map(m => `
+    <div class="tab ${m.id === tab ? 'active' : ''} ${m.enabled ? '' : 'off'}" style="--tc:${m.color}" data-tab="${m.id}">
+      <img src="/brand/${m.id}.png?v=${encodeURIComponent(m.name + m.color)}" alt="">${esc(m.name)}
+      ${m.status !== 'idle' ? '<span class="spin"></span>' : (m.todo ? `<span class="badge">${m.todo}</span>` : '')}
+    </div>`).join('') + `<div class="tab ${tab === 'settings' ? 'active' : ''}" style="--tc:#6366f1" data-tab="settings">⚙️ Réglages</div>`;
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab]');
+  if (t) { tab = t.dataset.tab; localStorage.setItem('tab', tab); postsKey = ''; $('#main').innerHTML = ''; refresh(); }
+});
+$('#genAll').onclick = async () => { const r = await api('/api/generate', {media:'all'}); toast(r.started.length ? `Vérification lancée pour ${r.started.length} média(s)` : 'Déjà en cours'); refresh(); };
+function updateTitle(){ const n = S.medias.reduce((a, m) => a + (m.enabled ? m.todo : 0), 0); document.title = (n ? `(${n}) ` : '') + 'Studio Médias'; }
+
+// ------------------------------------------------------------------ média
+function visible(p){
+  if (filter === 'todo') return !p.hidden && !(p.posted_x && p.posted_social);
+  if (filter === 'done') return p.posted_x || p.posted_social;
+  return true;
+}
+function renderMedia(m, full){
+  const busy = m.status !== 'idle';
+  const statusTxt = busy ? `<span class="spin"></span> ${esc(m.msg || 'En cours…')}` : `${esc(m.msg || '')}${m.msg ? ' · ' : ''}Dernière vérification : ${ago(m.last)}`;
+  if (!full && $('#mstatus')) { $('#mstatus').innerHTML = statusTxt; $('#genOne').disabled = busy; return; }
+  const list = posts.filter(visible);
+  $('#main').innerHTML = `
+    <section class="mhead" style="--tc:${m.color}">
+      <img src="/brand/${m.id}.png?v=${encodeURIComponent(m.name + m.color)}" alt="">
+      <div class="grow"><h1>${esc(m.name)} <span class="sub">${esc(m.handle)}</span></h1>
+        <div class="sub">${esc(m.niche)}</div>
+        <div class="status" id="mstatus">${statusTxt}</div></div>
+      <div class="tools">
+        <div class="seg">${[['todo','À poster'],['done','Postés'],['all','Tout']].map(([k,l]) => `<button data-filter="${k}" class="${filter===k?'on':''}">${l}</button>`).join('')}</div>
+        <button class="btn" id="genOne" title="Force une génération même sans sujet chaud" ${busy ? 'disabled' : ''}>Forcer une génération</button>
+        <button class="btn" id="enqOne" title="Dossier de fond vérifié sur l'affaire la plus suivie de la semaine" ${busy ? 'disabled' : ''}>🔎 Lancer une enquête</button>
+      </div>
+    </section>
+    <div id="postsWrap">${list.length ? list.map(p => postHTML(p, m)).join('') :
+      `<div class="empty">${posts.length ? 'Tout est posté 🎉 Les nouveaux sujets arriveront au prochain passage.' : (S.settings.has_key ? 'Aucun post pour l\'instant. Clique sur « Générer maintenant ».' : 'Commence par ajouter ta clé Gemini dans ⚙️ Réglages.')}</div>`}</div>`;
+  $('#genOne').onclick = async () => { await api('/api/generate', {media: m.id}); toast('Génération lancée'); refresh(); };
+  $('#enqOne').onclick = async () => { const r = await api('/api/enquete', {media: m.id}); toast(r.started ? 'Enquête lancée (2 à 4 min)' : 'Déjà en cours'); refresh(); };
+  document.querySelectorAll('[data-filter]').forEach(b => b.onclick = () => { filter = b.dataset.filter; localStorage.setItem('filter', filter); renderMedia(m, true); });
+  bindPosts();
+}
+function postHTML(p, m){
+  const n = wlen(p.x_text), done = p.hidden || (p.posted_x && p.posted_social);
+  return `<article class="post ${done ? 'done' : ''}" data-id="${p.id}" style="--tc:${m.color}">
+    <div class="phead">
+      <div class="meta"><span class="chip imp">${p.importance}/10</span><span class="chip">${esc(p.label)}</span>
+        <span class="chip">${p.n_sources} source${p.n_sources > 1 ? 's' : ''} : ${esc(p.sources.slice(0,4).join(', '))}</span>
+        ${p.kind === 'enquete' ? '<span class="chip enq">🔎 Enquête</span>' : ''}${p.kind === 'recap' ? '<span class="chip enq">📰 L’essentiel du jour</span>' : ''}${verifChip(p.verif)}${p.hot ? '<span class="chip hot">🔥 Sujet chaud</span>' : ''}${p.sensitive ? '<span class="chip warn">⚠️ Sujet sensible : relis avant de publier</span>' : ''}${p.press ? `<span class="chip press" title="Aucune photo libre trouvée : c’est la photo de l’article. Les droits appartiennent au média ou à l’agence.">📰 Photo de l’article : droits non garantis</span>` : ''}<span>Info ${newsAge(p.news_time)} · prêt le ${p.time}</span></div>
+      <h2>${esc(p.headline)}</h2>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <div class="ctitle">📸 Instagram / TikTok · carrousel ${p.slides.length} images</div>
+        <div class="slides">${p.slides.map((s, i) => `<a href="${s}" target="_blank" title="Image ${i+1}"><img loading="lazy" src="${s}" alt=""></a>`).join('')}</div>
+        <div class="row"><a class="btn" href="${p.zip}?dl=1">⬇ Télécharger les ${p.slides.length} images (.zip)</a>
+          ${p.slides.map((s, i) => `<a class="btn small" href="${s}&dl=1">${i+1}</a>`).join('')}</div>
+        <textarea class="cap" data-k="cap">${esc(p.caption)}</textarea>
+        <div class="row"><button data-act="copycap">Copier la description</button>${p.tiktok_text ? '<button data-act="copytt">Copier la légende TikTok</button>' : ''}
+          ${p.tiktok_zip ? `<a class="btn" href="${p.tiktok_zip}?dl=1" title="Images en plein écran 9:16 pour TikTok">⬇ Version TikTok (.zip)</a>` : ''}</div>
+      </div>
+      <div class="col">
+        <div class="ctitle">𝕏 X / Twitter · texte + image</div>
+        <a href="${p.x_image}" target="_blank"><img class="ximg" loading="lazy" src="${p.x_image}" alt=""></a>
+        <textarea class="tw" data-k="tw">${esc(p.x_text)}</textarea>
+        <div class="row"><button data-act="copytw">Copier le tweet</button>
+          <button class="btn white" data-act="openx">Ouvrir dans X</button>
+          <a class="btn" href="${p.x_image}&dl=1">⬇ Image</a>
+          <span class="count ${n > 280 ? 'over' : ''}" data-k="count">${n}/280</span></div>
+        ${p.thread && p.thread.length ? `<details><summary>Fil complet : ${p.thread.length + 1} tweets</summary>
+          <p class="sub" style="margin:0 0 8px">Publie le tweet ci-dessus avec l'image, puis réponds-y avec chacun de ceux-ci, dans l'ordre :</p>
+          ${p.thread.map((t, i) => `<textarea class="tw thr" data-thr="${i}">${esc(t)}</textarea><div class="row"><button data-copythr="${i}">Copier le tweet ${i + 2}</button></div>`).join('')}</details>` : ''}
+      </div>
+    </div>
+    <div class="pfoot">
+      <button class="${p.posted_social ? 'on' : ''}" data-st="posted_social">✓ Posté Insta/TikTok</button>
+      <button class="${p.posted_x ? 'on' : ''}" data-st="posted_x">✓ Posté sur X</button>
+      <button class="${p.hidden ? 'on' : ''}" data-st="hidden">Ignorer</button>
+      <span class="sp"></span>${p.can_rerender ? '<button data-act="rerender" title="Retente la recherche de photo et refait les images">🔄 Refaire les visuels</button>' : ''}
+      <button class="danger" data-act="del">Supprimer</button>
+    </div></article>`;
+}
+function bindPosts(){
+  document.querySelectorAll('.post').forEach(el => {
+    const id = +el.dataset.id, p = posts.find(x => x.id === id);
+    const tw = el.querySelector('[data-k=tw]'), cap = el.querySelector('[data-k=cap]'), cnt = el.querySelector('[data-k=count]');
+    tw.oninput = () => { const n = wlen(tw.value); cnt.textContent = n + '/280'; cnt.classList.toggle('over', n > 280); };
+    el.querySelectorAll('[data-act]').forEach(b => b.onclick = async () => {
+      const a = b.dataset.act;
+      if (a === 'copytw') copy(tw.value);
+      if (a === 'copycap') copy(cap.value);
+      if (a === 'copytt') copy(p.tiktok_text);
+      if (a === 'openx') window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(tw.value), '_blank');
+      if (a === 'rerender') { b.disabled = true; b.innerHTML = '<span class="spin"></span> En cours…'; const r = await api(`/api/post/${id}/rerender`, {}); toast(r.ok ? 'Visuels refaits ✓' : 'Impossible pour ce post'); postsKey = ''; refresh(); }
+      if (a === 'del' && confirm('Supprimer ce post ?')) { await api(`/api/post/${id}/delete`, {}); posts = posts.filter(x => x.id !== id); el.remove(); toast('Supprimé'); }
+    });
+    el.querySelectorAll('[data-copythr]').forEach(b => b.onclick = () => copy(el.querySelector(`[data-thr="${b.dataset.copythr}"]`).value));
+    el.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => {
+      const k = b.dataset.st; p[k] = !p[k];
+      await api(`/api/post/${id}/status`, {[k]: p[k]});
+      b.classList.toggle('on', p[k]);
+      const done = p.hidden || (p.posted_x && p.posted_social);
+      el.classList.toggle('done', done);
+      if (done && filter === 'todo') { el.style.transition = '.3s'; el.style.opacity = 0; setTimeout(() => el.remove(), 300); }
+      const m = S.medias.find(x => x.id === tab); if (m) { m.todo = posts.filter(x => !x.hidden && !(x.posted_x && x.posted_social)).length; renderTabs(); }
+    });
+  });
+}
+
+// ------------------------------------------------------------------ réglages
+let BUFCH = null;
+function chanOptions(sel, service){
+  const list = (BUFCH || []).filter(c => !service || String(c.service).toLowerCase().includes(service));
+  const same = c => c.ref === sel || (c.account === 1 && c.id === sel);
+  const known = list.some(same);
+  return '<option value="">—</option>' + (sel && !known ? `<option value="${esc(sel)}" selected>compte enregistré</option>` : '') +
+    list.map(c => `<option value="${esc(c.ref)}" ${same(c) ? 'selected' : ''}>${esc(c.displayName || c.name)} · Buffer ${c.account}</option>`).join('');
+}
+function pubRow(m, cfg){
+  const ko = t => `<span class="keyko">${t}</span>`, ok = t => `<span class="keyok">${t}</span>`;
+  return `<div class="card" data-pub="${m.id}" style="padding:12px;margin:10px 0;background:var(--panel2)">
+    <div class="row"><img src="/brand/${m.id}.png?v=${encodeURIComponent(m.name + m.color)}" style="width:34px;height:34px;border-radius:8px" alt="">
+      <b style="flex:1">${esc(m.name)}</b><label><input type="checkbox" data-p="enabled" ${cfg.enabled ? 'checked' : ''}> publication auto</label></div>
+    <div class="row" style="gap:16px;flex-wrap:wrap">
+      <span>𝕏 ${cfg.x ? ok('via Buffer') : (cfg.has_x ? ok('API X' + (cfg.x_name ? ' @' + esc(cfg.x_name) : '')) : ko('à choisir'))}</span>
+      <span>📸 Instagram ${cfg.instagram ? ok('via Buffer') : (cfg.has_ig ? ok('API Meta') : ko('à choisir'))}</span>
+      <span>🎵 TikTok ${cfg.tiktok ? ok('via Buffer') : 'notification « à poster »'}</span></div>
+    <details data-xapi style="margin-top:6px"><summary class="help">Options avancées : API officielles Instagram (Meta, gratuite) ou X (payante)</summary>
+      <div class="grid2">
+        <div><label class="f">Instagram : ID du compte</label><input type="text" data-p="ig_user_id" value="${esc(cfg.ig_user_id || '')}" placeholder="ex. 17841400000000000"></div>
+        <div><label class="f">Instagram : jeton ${cfg.has_ig ? '<span class="keyok">· enregistré</span>' : ''}</label><input type="password" data-p="ig_token" placeholder="${cfg.has_ig ? 'laisser vide pour garder' : 'jeton longue durée'}"></div>
+      </div>
+      <div class="row" style="margin-top:8px">X (API payante) : <button data-xstart="${m.id}">${cfg.has_x ? 'Reconnecter' : 'Connecter le compte X'}</button>
+      <input type="text" data-xpin="${m.id}" placeholder="code PIN" style="max-width:130px;display:none"><button data-xfinish="${m.id}" style="display:none">Valider</button>
+      <span data-xres="${m.id}"></span></div></details>
+    <input type="hidden" data-p="x" value="${esc(cfg.x || '')}"><input type="hidden" data-p="instagram" value="${esc(cfg.instagram || '')}"><input type="hidden" data-p="tiktok" value="${esc(cfg.tiktok || '')}">
+  </div>`;
+}
+const RH = {x: {max: 20, gap: 15, n: '𝕏 X (chaque compte)'}, instagram: {max: 5, gap: 120, n: '📸 Instagram'}, tiktok: {max: 4, gap: 150, n: '🎵 TikTok'}, hub: {max: 30, gap: 12, n: '⭐ X « Gros Titre »'}};
+function rhythmRows(cur){
+  return Object.entries(RH).map(([k, d]) => { const c = (cur || {})[k] || {};
+    return `<div class="mrow" style="grid-template-columns:200px 1fr 1fr"><b>${d.n}</b>
+      <input type="number" min="1" max="60" data-rh="${k}" data-rk="max" value="${c.max || d.max}">
+      <input type="number" min="5" max="600" step="5" data-rh="${k}" data-rk="gap" value="${c.gap || d.gap}"></div>`; }).join('');
+}
+function rhythmConfig(){
+  const out = {};
+  document.querySelectorAll('[data-rh]').forEach(i => { (out[i.dataset.rh] = out[i.dataset.rh] || {})[i.dataset.rk] = Math.max(1, +i.value || RH[i.dataset.rh][i.dataset.rk]); });
+  return out;
+}
+function bufRow(m, cfg){
+  return `<div class="mrow" data-buf="${m.id}" style="grid-template-columns:120px 1fr 1fr 1fr"><b>${esc(m.name)}</b>
+    <select data-b="x">${chanOptions(cfg.x, 'twitter')}</select><select data-b="instagram">${chanOptions(cfg.instagram, 'instagram')}</select>
+    <select data-b="tiktok">${chanOptions(cfg.tiktok, 'tiktok')}</select></div>`;
+}
+function renderSettings(){
+  const st = S.settings;
+  $('#main').innerHTML = `<div id="settingsView">
+    <section class="card"><h2>🔑 Intelligence artificielle (Gemini)</h2>
+      <p class="help">Clé gratuite sur aistudio.google.com/apikey. Elle reste sur ton PC (fichier data/settings.json).</p>
+      <label class="f">Clé API Gemini ${st.has_key ? `<span class="keyok">· enregistrée (${esc(st.key_mask)})</span>` : '<span class="keyko">· manquante</span>'}</label>
+      <div class="row"><input type="password" id="gkey" placeholder="${st.has_key ? 'Laisser vide pour garder la clé actuelle' : 'Colle ta clé ici'}">
+        <button id="testKey">Tester</button><span id="keyRes"></span></div>
+      <label class="f">Qualité de rédaction</label>
+      <select id="quality"><option value="eco">Économique : modèles Flash-Lite, beaucoup d'appels gratuits (conseillé)</option>
+        <option value="max">Meilleure : modèles Flash, quota gratuit plus petit</option></select>
+      <label class="f">Clé Pexels (optionnelle : photos d'illustration quand Wikipédia n'en a pas) ${st.has_pexels ? `<span class="keyok">· enregistrée (${esc(st.pexels_mask)})</span>` : ''}</label>
+      <input type="password" id="pkey" placeholder="pexels.com/api (gratuit)">
+    </section>
+    <section class="card"><h2>🔒 Accès au site</h2>
+      <p class="help">Indispensable si tu héberges le studio en ligne : sans mot de passe, n'importe qui ayant l'adresse pourrait le voir et le modifier.</p>
+      <label class="f">Mot de passe ${st.has_password ? '<span class="keyok">· activé</span>' : '<span class="keyko">· aucun</span>'}</label>
+      <div class="row"><input type="password" id="pw" placeholder="${st.has_password ? 'Laisser vide pour garder le mot de passe actuel' : 'Choisis un mot de passe'}">
+        ${st.has_password ? '<label><input type="checkbox" id="pwdel"> supprimer le mot de passe</label>' : ''}</div>
+      <p class="help">Le navigateur le demandera une fois (identifiant au choix, seul le mot de passe compte).</p>
+    </section>
+    <section class="card"><h2>📲 Notifications sur ton téléphone</h2>
+      <p class="help">Gratuit, sans compte : installe l'appli <b>ntfy</b> (Android ou iPhone), touche <b>+</b>, puis abonne-toi au sujet ci-dessous (serveur ntfy.sh, celui par défaut). Garde ce nom pour toi : c'est ton canal privé.</p>
+      <div class="row"><input type="text" readonly value="${esc(st.ntfy_topic)}" id="ntfyTopic" style="max-width:340px">
+        <button data-copy-topic>Copier</button><button id="notifTest">Envoyer un test</button><span id="notifRes"></span></div>
+      <label class="f"><input type="checkbox" id="nReady"> Quand de nouveaux posts sont prêts (ou une enquête)</label>
+      <label class="f"><input type="checkbox" id="nPub"> Quand un post est publié automatiquement (compte + réseau)</label>
+      <label class="f"><input type="checkbox" id="nErr"> Quand une publication échoue</label>
+    </section>
+    <section class="card"><h2>🚀 Publication automatique (100 % gratuite)</h2>
+      <p class="help">Le plus simple : <b>1 compte Buffer gratuit par média</b>, avec son compte X, son Instagram et son TikTok (3 réseaux = exactement l’offre gratuite). Le pas-à-pas est dans PUBLICATION_AUTO.md. Seuls les posts <b>vérifiés</b> partent seuls, au rythme de chaque réseau (réglable plus bas).</p>
+      <h3 style="margin:14px 0 4px">1. Tes comptes Buffer</h3>
+      <p class="help">Sur chaque compte Buffer : Settings → API → crée une clé, colle-la ici, puis clique sur « Charger mes comptes Buffer ».</p>
+      <div class="grid2">${(st.buffers || []).map(b => `<div><label class="f">Compte Buffer ${b.n}${b.n === 6 ? ' (pour Gros Titre)' : ''} ${b.has ? `<span class="keyok">· enregistré (${esc(b.mask)})</span>` : ''}</label>
+        <input type="password" data-bufkey="${b.n}" placeholder="${b.has ? 'laisser vide pour garder' : (b.n === 1 ? 'Colle la clé API Buffer' : 'facultatif')}"></div>`).join('')}</div>
+      <div class="row" style="margin-top:8px"><button id="bufLoad">Charger mes comptes Buffer</button><span id="bufRes"></span></div>
+      <h3 style="margin:14px 0 4px">2. Quel compte pour quel média</h3>
+      <div class="mrow" style="grid-template-columns:120px 1fr 1fr 1fr;color:var(--mut)"><span></span><span>𝕏 Compte X</span><span>📸 Instagram</span><span>🎵 TikTok</span></div>
+      <div id="bufRows">${S.medias.map(m => bufRow(m, st.publish[m.id] || {})).join('')}</div>
+      <h3 style="margin:14px 0 4px">3. Activer</h3>
+      <div id="pubRows">${S.medias.map(m => pubRow(m, st.publish[m.id] || {})).join('')}</div>
+      <label class="f"><input type="checkbox" id="autoSens"> Publier aussi automatiquement les <b>sujets sensibles</b> vérifiés (risque juridique : à tes risques)</label>
+      <label class="f"><input type="checkbox" id="autoEnq"> Publier aussi automatiquement les <b>enquêtes</b> 🔎</label>
+      <h3 style="margin:16px 0 4px">⭐ Compte X généraliste « Gros Titre » (facultatif, conseillé)</h3>
+      <p class="help">Un 6e compte X (identité prête dans le dossier COMPTES/Gros Titre), généraliste, qui publie en continu le meilleur des 5 médias (les sujets les plus forts, dès qu’ils tombent), comme les grands comptes d’alertes. Sur X, ce sont eux qui grossissent le plus vite. Mets-le dans le compte Buffer 6.</p>
+      <div class="row"><label><input type="checkbox" id="hubOn" ${(st.hub || {}).enabled ? 'checked' : ''}> activer</label>
+        <input type="text" id="hubName" value="${esc((st.hub || {}).name || 'GROS TITRE')}" style="max-width:200px" placeholder="nom du compte">
+        <select id="hubX" style="max-width:300px">${chanOptions((st.hub || {}).x, 'twitter')}</select></div>
+      <h3 style="margin:16px 0 4px">⏱️ Rythme de publication</h3>
+      <p class="help">X récompense la vitesse et le volume : tout ce qui est vérifié part vite (un sujet très chaud passe devant, 5 min d’écart). Instagram et TikTok récompensent la qualité : seulement les meilleurs sujets, bien espacés, sinon chaque post touche moins de monde.</p>
+      <div class="mrow" style="grid-template-columns:200px 1fr 1fr;color:var(--mut)"><span></span><span>posts max par jour</span><span>écart mini (minutes)</span></div>
+      <div id="rhRows">${rhythmRows(st.publish_rhythm)}</div>
+      <label class="f" style="margin-top:10px"><input type="checkbox" id="recapOn"> 📰 « L’essentiel du jour » : chaque soir, un carrousel récap des infos du jour par média (format phare des comptes d’actu, aucun appel IA), à partir de
+        <input type="number" id="recapHour" min="12" max="22" style="width:70px"> h</label>
+      <details style="margin-top:10px"><summary>Option payante : API officielle X (environ 0,015 $ par post)</summary>
+        <p class="help">Inutile si tes comptes X passent par Buffer. Sinon : crée une app sur developer.x.com, colle ses clés, enregistre, puis connecte chaque compte dans « Options avancées » de sa carte.</p>
+        <div class="grid2">
+          <div><label class="f">X : API Key de ton app ${st.has_x_app ? '<span class="keyok">· enregistrée</span>' : ''}</label><input type="password" id="xKey" placeholder="developer.x.com > ton app > Keys"></div>
+          <div><label class="f">X : API Key Secret</label><input type="password" id="xSecret" placeholder="${st.has_x_app ? 'enregistré' : ''}"></div>
+        </div>
+      </details>
+      <label class="f"><input type="checkbox" id="tunnelBox" ${st.has_password ? '' : 'disabled'}> Adresse publique automatique et sécurisée (tunnel Cloudflare gratuit) : nécessaire pour que Buffer récupère les images, et pour ouvrir le studio depuis ton téléphone n'importe où. ${st.has_password ? '' : '<b>Définis d’abord un mot de passe ci-dessus.</b>'}</label>
+      <p class="help">${st.tunnel_status.url ? `Adresse actuelle : <a href="${esc(st.tunnel_status.url)}" target="_blank">${esc(st.tunnel_status.url)}</a>` : (st.tunnel_status.installed ? 'Tunnel prêt à démarrer.' : 'Installe d’abord cloudflared (une seule fois) : <code>winget install --id Cloudflare.cloudflared</code>')}</p>
+      <label class="f">Ou adresse fixe du studio si tu l'héberges sur un serveur</label>
+      <input type="text" id="pubUrl" placeholder="https://ton-domaine.fr">
+    </section>
+    <section class="card"><h2>⏱️ Automatique</h2>
+      <p class="help">Le studio relit les sources de chaque média régulièrement (gratuit) et ne fait travailler l'IA que quand un sujet chauffe : repris par plusieurs médias dans les 3 dernières heures. Il relance aussi un compte resté trop longtemps sans post. La nuit, seules les très grosses infos passent.</p>
+      <label class="f"><input type="checkbox" id="auto"> Génération automatique (conseillé)</label>
+      <div class="grid2">
+        <div><label class="f">Vérifier l'actu toutes les (min)</label><input type="number" id="check" min="5" step="5"></div>
+        <div><label class="f">Sujet chaud si repris par au moins (médias)</label><input type="number" id="hotn" min="2" max="8"></div>
+        <div><label class="f">Écart mini entre 2 générations (min)</label><input type="number" id="gap" min="5" step="5"></div>
+        <div><label class="f">Au moins 1 post toutes les (heures)</label><input type="number" id="silence" min="1" max="12"></div>
+        <div><label class="f">🔎 Une enquête tous les (jours, 0 = jamais)</label><input type="number" id="enqdays" min="0" max="14"></div>
+        <div><label class="f">🔎 Enquêtes à partir de (heure)</label><input type="number" id="enqhour" min="6" max="22"></div>
+        <div><label class="f">De (heure)</label><input type="number" id="h0" min="0" max="23"></div>
+        <div><label class="f">À (heure)</label><input type="number" id="h1" min="1" max="24"></div>
+        <div><label class="f">Posts par passage et par média</label><input type="number" id="perrun" min="1" max="4"></div>
+        <div><label class="f">Maximum par jour et par média</label><input type="number" id="maxday" min="1" max="40"></div>
+        <div><label class="f">Format du carrousel</label><select id="csize"><option value="1080x1350">4:5 · Instagram + TikTok (conseillé)</option><option value="1080x1920">9:16 · plein écran TikTok</option><option value="1080x1080">1:1 · carré</option></select></div>
+      </div>
+      <label class="f"><input type="checkbox" id="press"> Toujours une photo : si aucune photo libre n'est trouvée, utiliser celle de l'article (créditée au média, mais les droits ne t'appartiennent pas)</label>
+      <label class="f"><input type="checkbox" id="browserReader"> Lire les sites qui bloquent les robots (Le Monde, L'Équipe, Libération…) avec un vrai navigateur Chrome, pour mieux vérifier les faits. Une fenêtre peut apparaître brièvement dans la barre des tâches.</label>
+      <label class="f" id="autoWrap"><input type="checkbox" id="autostartBox"> Lancer le studio tout seul au démarrage de Windows, en arrière-plan (plus besoin d'ouvrir LANCER.bat)</label>
+      <p class="help" style="margin-top:12px">Repère : la lecture des sources ne coûte rien. L'IA n'est appelée que pour les sujets chauds, environ 30 à 80 fois par jour pour les 5 médias, ce qui reste dans le palier gratuit de Gemini en mode Économique.</p>
+    </section>
+    <section class="card"><h2>🎨 Tes 5 médias</h2>
+      <p class="help">Nom, @, couleur et phrase de la 3e image. Le logo est régénéré automatiquement.</p>
+      ${S.medias.map(m => `<div class="mrow" data-m="${m.id}">
+        <img src="/brand/${m.id}.png?v=${encodeURIComponent(m.name + m.color)}" alt="">
+        <input type="text" data-f="name" value="${esc(m.name)}" title="Nom">
+        <input type="text" data-f="handle" value="${esc(m.handle)}" title="@">
+        <input type="color" data-f="color" value="${esc(m.color)}" title="Couleur">
+        <input type="text" class="wide" data-f="cta" value="${esc(m.cta)}" title="Phrase d'abonnement (image 3)">
+        <label title="Actif"><input type="checkbox" data-f="enabled" ${m.enabled ? 'checked' : ''}> actif</label>
+      </div>`).join('')}
+    </section>
+    <div class="row"><button class="btn primary" id="save">Enregistrer les réglages</button></div>
+    <section class="card" style="margin-top:18px"><h2>📜 Journal</h2><div class="log" id="log"></div></section>
+  </div>`;
+  $('#quality').value = st.ai_quality; $('#auto').checked = st.auto; $('#check').value = st.check_every_min; $('#hotn').value = st.hot_sources; $('#gap').value = st.min_gap_min; $('#silence').value = st.max_silence_h; $('#enqdays').value = st.enquete_every_days; $('#enqhour').value = st.enquete_hour; $('#press').checked = st.press_photo; $('#nReady').checked = st.notify_ready; $('#nPub').checked = st.notify_published; $('#nErr').checked = st.notify_error;
+  $('#recapOn').checked = st.recap; $('#recapHour').value = st.recap_hour; $('#pubUrl').value = st.public_url || ''; $('#tunnelBox').checked = st.tunnel;
+  document.querySelector('[data-copy-topic]').onclick = () => copy($('#ntfyTopic').value);
+  $('#notifTest').onclick = async () => { $('#notifRes').textContent = 'Envoi…'; const r = await api('/api/notify-test', {}); $('#notifRes').innerHTML = r.ok ? '<span class="keyok">Envoyé ✓ (regarde ton téléphone)</span>' : '<span class="keyko">Échec de l’envoi</span>'; };
+  const bufKeys = () => [1, 2, 3, 4, 5, 6].map(n => (document.querySelector(`[data-bufkey="${n}"]`) || {}).value || '');
+  $('#bufLoad').onclick = async () => { $('#bufRes').textContent = 'Chargement…'; const r = await api('/api/buffer/channels', {keys: bufKeys()});
+    if (!r.ok) { $('#bufRes').innerHTML = `<span class="keyko">${esc(r.msg)}</span>`; return; }
+    BUFCH = r.channels; $('#bufRes').innerHTML = `<span class="keyok">${r.channels.length} réseau(x) trouvé(s)</span>` + (r.warn ? ` <span class="keyko">${esc(r.warn)}</span>` : '');
+    const keep = pubConfig(), hubSel = $('#hubX').value;
+    $('#bufRows').innerHTML = S.medias.map(m => bufRow(m, {...(st.publish[m.id] || {}), ...(keep[m.id] || {})})).join('');
+    $('#hubX').innerHTML = chanOptions(hubSel || (st.hub || {}).x, 'twitter'); };
+  document.querySelectorAll('[data-xstart]').forEach(b => b.onclick = async () => {
+    const mid = b.dataset.xstart, res = document.querySelector(`[data-xres="${mid}"]`);
+    if (!S.settings.has_x_app && !$('#xKey').value) { res.innerHTML = '<span class="keyko">Renseigne d’abord les clés de ton app X puis enregistre</span>'; return; }
+    const r = await api('/api/x/start', {media: mid});
+    if (!r.ok) { res.innerHTML = `<span class="keyko">${esc(r.msg)}</span>`; return; }
+    window.open(r.url, '_blank'); res.textContent = 'Connecte-toi avec le compte X de ce média, autorise, puis colle le code PIN :';
+    document.querySelector(`[data-xpin="${mid}"]`).style.display = ''; document.querySelector(`[data-xfinish="${mid}"]`).style.display = ''; });
+  document.querySelectorAll('[data-xfinish]').forEach(b => b.onclick = async () => {
+    const mid = b.dataset.xfinish, res = document.querySelector(`[data-xres="${mid}"]`);
+    const r = await api('/api/x/finish', {media: mid, pin: document.querySelector(`[data-xpin="${mid}"]`).value});
+    res.innerHTML = r.ok ? `<span class="keyok">Compte @${esc(r.name)} connecté ✓</span>` : `<span class="keyko">${esc(r.msg)}</span>`; });
+  $('#autoSens').checked = st.auto_sensitive; $('#autoEnq').checked = st.auto_enquetes; $('#browserReader').checked = st.browser_reader; $('#autostartBox').checked = st.autostart; if (!st.windows) $('#autoWrap').style.display = 'none';
+  $('#autostartBox').onchange = async e => { const r = await api('/api/autostart', {enabled: e.target.checked}); toast(r.ok ? (r.enabled ? 'Le studio démarrera avec Windows ✓' : 'Démarrage automatique désactivé') : 'Impossible : ' + r.msg); };
+  $('#h0').value = st.hours[0]; $('#h1').value = st.hours[1]; $('#perrun').value = st.per_run; $('#maxday').value = st.max_per_day;
+  $('#csize').value = st.carousel_size.join('x');
+  $('#testKey').onclick = async () => { $('#keyRes').textContent = 'Test…'; const r = await api('/api/test-key', {key: $('#gkey').value}); $('#keyRes').innerHTML = `<span class="${r.ok ? 'keyok' : 'keyko'}">${esc(r.msg)}</span>`; };
+  $('#save').onclick = async () => {
+    const medias = {};
+    document.querySelectorAll('[data-m]').forEach(r => { const o = {}; r.querySelectorAll('[data-f]').forEach(i => o[i.dataset.f] = i.type === 'checkbox' ? i.checked : i.value); medias[r.dataset.m] = o; });
+    const [w, h] = $('#csize').value.split('x').map(Number);
+    S = await api('/api/settings', {gemini_key: $('#gkey').value, pexels_key: $('#pkey').value, password: $('#pw').value, remove_password: $('#pwdel') ? $('#pwdel').checked : false, ai_quality: $('#quality').value,
+      auto: $('#auto').checked, check_every_min: Math.max(5, +$('#check').value || 10), hot_sources: Math.max(2, +$('#hotn').value || 3), min_gap_min: Math.max(5, +$('#gap').value || 20), max_silence_h: Math.max(1, +$('#silence').value || 3), enquete_every_days: Math.max(0, +$('#enqdays').value), enquete_hour: Math.min(22, Math.max(6, +$('#enqhour').value || 18)), press_photo: $('#press').checked, browser_reader: $('#browserReader').checked,
+      notify_ready: $('#nReady').checked, notify_published: $('#nPub').checked, notify_error: $('#nErr').checked,
+      ...Object.fromEntries(bufKeys().map((v, i) => [i ? `buffer_key${i + 1}` : 'buffer_key', v])), publish: pubConfig(), x_api_key: $('#xKey').value, x_api_secret: $('#xSecret').value, auto_sensitive: $('#autoSens').checked, auto_enquetes: $('#autoEnq').checked, publish_rhythm: rhythmConfig(), recap: $('#recapOn').checked, recap_hour: Math.min(22, Math.max(12, +$('#recapHour').value || 19)),
+      hub: {enabled: $('#hubOn').checked, name: $('#hubName').value.trim() || 'GROS TITRE', x: $('#hubX').value}, public_url: $('#pubUrl').value.trim(), tunnel: $('#tunnelBox').checked, hours: [+$('#h0').value, +$('#h1').value],
+      per_run: Math.max(1, +$('#perrun').value || 2), max_per_day: Math.max(1, +$('#maxday').value || 10), carousel_size: [w, h], medias});
+    toast('Réglages enregistrés ✓'); renderHeader(); renderTabs(); renderSettings();
+  };
+  renderLog();
+}
+function pubConfig(){
+  const out = {};
+  document.querySelectorAll('[data-pub]').forEach(row => { const cfg = {}; row.querySelectorAll('[data-p]').forEach(i => cfg[i.dataset.p] = i.type === 'checkbox' ? i.checked : i.value); out[row.dataset.pub] = cfg; });
+  document.querySelectorAll('[data-buf]').forEach(row => { const cfg = out[row.dataset.buf] || {}; row.querySelectorAll('[data-b]').forEach(i => cfg[i.dataset.b] = i.value); out[row.dataset.buf] = cfg; });
+  return out;
+}
+function renderLog(){
+  const el = $('#log'); if (!el) return;
+  el.textContent = S.log.slice().reverse().map(l => new Date(l.t * 1000).toLocaleTimeString('fr-FR') + '  ' + l.msg).join('\n') || 'Rien pour l\'instant.';
+}
+refresh();
+</script>
+</body>
+</html>

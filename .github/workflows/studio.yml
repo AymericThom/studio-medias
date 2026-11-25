@@ -1,0 +1,135 @@
+# Studio Médias en ligne, gratuit, 24h/24, sans carte bancaire : GitHub Actions + GitHub Pages.
+# Mode d'emploi : HEBERGEMENT.md (section GitHub). Les clés se mettent dans Settings > Secrets and variables > Actions.
+name: studio-medias
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"        # toutes les 15 min (GitHub peut décaler de quelques minutes)
+  workflow_dispatch:
+
+permissions:
+  contents: write      # uniquement pour le « maintien » (commit vide tous les 50 jours)
+  pages: write
+  id-token: write
+
+concurrency:
+  group: studio-medias
+  cancel-in-progress: false
+
+jobs:
+  passage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Composants
+        run: pip install -r requirements.txt cryptography
+
+      - name: Navigateur (lecture des sites protégés)
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-v1
+      - run: python -m playwright install --with-deps chromium
+
+      - name: Mémoire du studio (posts, réglages sans clés, cache)
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data
+            !data/navigateur
+            !data/studio.log
+          key: studio-data-${{ github.run_id }}
+          restore-keys: studio-data-
+
+      - name: Passage complet
+        env:
+          STUDIO_CLOUD: "1"
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PUBLIC_STATIC_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          AUTO_PUBLISH: ${{ vars.AUTO_PUBLISH || '1' }}
+          AUTO_SENSITIVE: ${{ vars.AUTO_SENSITIVE || '0' }}
+          AUTO_ENQUETES: ${{ vars.AUTO_ENQUETES || '0' }}
+          BUFFER_KEY_1: ${{ secrets.BUFFER_KEY_1 }}
+          BUFFER_KEY_2: ${{ secrets.BUFFER_KEY_2 }}
+          BUFFER_KEY_3: ${{ secrets.BUFFER_KEY_3 }}
+          BUFFER_KEY_4: ${{ secrets.BUFFER_KEY_4 }}
+          BUFFER_KEY_5: ${{ secrets.BUFFER_KEY_5 }}
+          BUFFER_KEY_6: ${{ secrets.BUFFER_KEY_6 }}
+          BUFFER_HUB_X: ${{ secrets.BUFFER_HUB_X }}
+          BUFFER_POLITIQUE_X: ${{ secrets.BUFFER_POLITIQUE_X }}
+          BUFFER_POLITIQUE_TIKTOK: ${{ secrets.BUFFER_POLITIQUE_TIKTOK }}
+          BUFFER_POLITIQUE_INSTAGRAM: ${{ secrets.BUFFER_POLITIQUE_INSTAGRAM }}
+          BUFFER_FINANCE_X: ${{ secrets.BUFFER_FINANCE_X }}
+          BUFFER_FINANCE_TIKTOK: ${{ secrets.BUFFER_FINANCE_TIKTOK }}
+          BUFFER_FINANCE_INSTAGRAM: ${{ secrets.BUFFER_FINANCE_INSTAGRAM }}
+          BUFFER_TECH_X: ${{ secrets.BUFFER_TECH_X }}
+          BUFFER_TECH_TIKTOK: ${{ secrets.BUFFER_TECH_TIKTOK }}
+          BUFFER_TECH_INSTAGRAM: ${{ secrets.BUFFER_TECH_INSTAGRAM }}
+          BUFFER_SPORT_X: ${{ secrets.BUFFER_SPORT_X }}
+          BUFFER_SPORT_TIKTOK: ${{ secrets.BUFFER_SPORT_TIKTOK }}
+          BUFFER_SPORT_INSTAGRAM: ${{ secrets.BUFFER_SPORT_INSTAGRAM }}
+          BUFFER_MONDE_X: ${{ secrets.BUFFER_MONDE_X }}
+          BUFFER_MONDE_TIKTOK: ${{ secrets.BUFFER_MONDE_TIKTOK }}
+          BUFFER_MONDE_INSTAGRAM: ${{ secrets.BUFFER_MONDE_INSTAGRAM }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          IG_POLITIQUE_USER: ${{ secrets.IG_POLITIQUE_USER }}
+          IG_POLITIQUE_TOKEN: ${{ secrets.IG_POLITIQUE_TOKEN }}
+          IG_FINANCE_USER: ${{ secrets.IG_FINANCE_USER }}
+          IG_FINANCE_TOKEN: ${{ secrets.IG_FINANCE_TOKEN }}
+          IG_TECH_USER: ${{ secrets.IG_TECH_USER }}
+          IG_TECH_TOKEN: ${{ secrets.IG_TECH_TOKEN }}
+          IG_SPORT_USER: ${{ secrets.IG_SPORT_USER }}
+          IG_SPORT_TOKEN: ${{ secrets.IG_SPORT_TOKEN }}
+          IG_MONDE_USER: ${{ secrets.IG_MONDE_USER }}
+          IG_MONDE_TOKEN: ${{ secrets.IG_MONDE_TOKEN }}
+          X_POLITIQUE_TOKEN: ${{ secrets.X_POLITIQUE_TOKEN }}
+          X_POLITIQUE_SECRET: ${{ secrets.X_POLITIQUE_SECRET }}
+          X_FINANCE_TOKEN: ${{ secrets.X_FINANCE_TOKEN }}
+          X_FINANCE_SECRET: ${{ secrets.X_FINANCE_SECRET }}
+          X_TECH_TOKEN: ${{ secrets.X_TECH_TOKEN }}
+          X_TECH_SECRET: ${{ secrets.X_TECH_SECRET }}
+          X_SPORT_TOKEN: ${{ secrets.X_SPORT_TOKEN }}
+          X_SPORT_SECRET: ${{ secrets.X_SPORT_SECRET }}
+          X_MONDE_TOKEN: ${{ secrets.X_MONDE_TOKEN }}
+          X_MONDE_SECRET: ${{ secrets.X_MONDE_SECRET }}
+        run: xvfb-run -a python run_cloud.py
+
+      - name: Sauvegarder la mémoire
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data
+            !data/navigateur
+            !data/studio.log
+          key: studio-data-${{ github.run_id }}
+
+      - name: Garder la planification active (GitHub la coupe après 60 jours sans activité)
+        if: github.event_name == 'schedule'
+        run: |
+          last=$(git log -1 --format=%ct)
+          if [ $(( $(date +%s) - last )) -gt 4320000 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "maintien de la planification"
+            git push
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
