@@ -179,6 +179,8 @@ def _eligible(p: dict, s: dict, platform: str = "x") -> bool:
         return False
     if platform == "hub" and d.get("kind") == "recap":     # le récap d'un média n'a rien à faire sur le compte généraliste
         return False
+    if platform == "hub" and p.get("n_sources", 0) < 3:    # une vraie grosse info est reprise par au moins 3 médias
+        return False
     if p["sensitive"] and not _ok_sensitive(p, s):
         return False
     return True
